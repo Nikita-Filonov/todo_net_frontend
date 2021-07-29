@@ -2,8 +2,10 @@ import React, {useState} from "react";
 import {Button, Form, Alert} from "react-bootstrap";
 import {useAuth} from "../../Providers/AuthProvider";
 import {baseUrl} from "../../Utils/Links";
+import {Link, useHistory} from "react-router-dom";
 
 export const Login = () => {
+  const history = useHistory();
   const {login} = useAuth();
   const loginApi = baseUrl + 'api/v1/token'
   const [email, setEmail] = useState('');
@@ -13,6 +15,9 @@ export const Login = () => {
   const onLogin = async () => {
     await fetch(loginApi, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         email: email,
         password: password,
@@ -24,13 +29,14 @@ export const Login = () => {
           setError(data)
           return;
         }
-        await login(data.access_token)
+        await login(data)
+        history.push('/')
       })
   }
 
   return (
     <div className={'container w-50'}>
-      <p className={'text-center mt-5'}>Авторизация</p>
+      <p className={'text-center mt-5'}>Sign in</p>
       <div className={'justify-content-center align-items-center d-flex'}>
         <Form className={'w-50 mt-3'}>
           {error.message && <Alert variant={error.level}>
@@ -56,12 +62,13 @@ export const Login = () => {
             />
           </Form.Group>
 
+          <Link to={'/registration'} className={'text-decoration-none'}>Sign up</Link>
           <Button
             variant="outline-primary"
             className={'w-100 mt-3'}
             onClick={onLogin}
           >
-            Login
+            Sign in
           </Button>
         </Form>
       </div>

@@ -1,27 +1,42 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {baseUrl} from "../Utils/Links";
 
 const AuthContext = React.createContext(null);
 
 const AuthProvider = ({children}) => {
   const userApi = baseUrl + 'api/v1/users/';
+  const [userIdentity, setUserIdentity] = useState(null)
   const [token, setToken] = useState(null);
   const [user, setUser] = useState({});
 
-  const login = async (token) => {
-    localStorage.setItem('token', token)
+  useEffect(() => {
+    (async () => {
+      const storageToken = localStorage.getItem('token')
+      const storageUserIdentity = localStorage.getItem('userIdentity')
+      setToken(storageToken)
+      setUserIdentity(storageUserIdentity)
+
+      token && await getUser();
+    })()
+  }, [token, userIdentity])
+
+  const login = async ({access_token, userIdentity}) => {
+    localStorage.setItem('token', access_token)
+    localStorage.setItem('userIdentity', userIdentity)
     setToken(token)
+    setUserIdentity(userIdentity)
   }
 
   const logout = async () => {
     localStorage.removeItem('token')
+    localStorage.removeItem('userIdentity')
     setToken(null)
   }
 
   const getUser = async () => {
-    await fetch(userApi, {
+    await fetch(userApi + `${userIdentity}`, {
       headers: {
-        'Authorization': `Token ${token}`
+        'Authorization': `Bearer ${token}`
       },
     }).then(response => response.json())
       .then(async data => setUser(data))

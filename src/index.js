@@ -7,15 +7,23 @@ import {BrowserRouter as Router, Switch} from "react-router-dom";
 import {PublicRoute} from "./Components/Navigation/PublicRoute";
 import {Login} from "./Pages/Login/Login";
 import {Registration} from "./Pages/Login/Registration";
-import {AuthProvider} from "./Providers/AuthProvider";
+import {AuthProvider, useAuth} from "./Providers/AuthProvider";
+import {NavigationNavbar} from "./Components/Navigation/Navbar";
+import {PrivateRoute} from "./Components/Navigation/PrivateRoute";
+import Tasks from "./Pages/Tasks/Tasks";
+import {TasksProvider} from "./Providers/TasksProvider";
 
 const CustomRoutes = () => {
+  const {token} = useAuth();
+
   return (
     <Router>
+      {token && <NavigationNavbar/>}
       <div>
         <Switch>
           <PublicRoute exact path="/login" component={Login}/>
           <PublicRoute exact path="/registration" component={Registration}/>
+          <PrivateRoute exact path="/" component={Tasks}/>
         </Switch>
       </div>
     </Router>
@@ -25,7 +33,9 @@ const CustomRoutes = () => {
 ReactDOM.render(
   <React.StrictMode>
     <AuthProvider>
-      <CustomRoutes/>
+      <TasksProvider>
+        <CustomRoutes/>
+      </TasksProvider>
     </AuthProvider>
   </React.StrictMode>,
   document.getElementById('root')
