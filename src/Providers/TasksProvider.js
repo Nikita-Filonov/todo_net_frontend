@@ -24,10 +24,50 @@ const TasksProvider = ({children}) => {
       .then(async data => setTasks(data))
   }
 
+  const createTask = async (payload) => {
+    await fetch(tasksApi, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).then(response => response.json())
+      .then(async data => setTasks([...tasks, data]))
+  }
+
+  const updateTask = async (taskId, payload) => {
+    await fetch(tasksApi + `/${taskId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).then(response => response.json())
+      .then(async data => setTasks(tasks.map(task =>
+        task.id === taskId ? data : task
+      )))
+  }
+
+  const deleteTask = async (taskId) => {
+    setTasks(tasks.filter(task => task.id !== taskId))
+    await fetch(tasksApi + `/${taskId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    })
+  }
+
   return (
     <TasksContext.Provider
       value={{
-        tasks
+        tasks,
+        createTask,
+        deleteTask,
+        updateTask
       }}
     >
       {children}

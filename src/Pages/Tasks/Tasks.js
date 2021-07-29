@@ -1,44 +1,15 @@
-import React, {memo, useCallback, useMemo, useState} from "react";
+import React, {memo, useMemo, useState} from "react";
 import {Alert, Col, Container, Dropdown, DropdownButton, Form, ListGroup, Row} from 'react-bootstrap';
 import Event from "../../Components/Items/Event";
 import {EventForm} from "../../Components/Blocks/EventForm";
 import {applyFilter} from "../../Utils/Utils";
 import {useTasks} from "../../Providers/TasksProvider";
 
-export const eventsData = [
-  {
-    id: 1,
-    title: 'test_1',
-    done: false
-  },
-  {
-    id: 2,
-    title: 'test_2',
-    done: false
-  },
-  {
-    id: 3,
-    title: 'test_3',
-    done: true
-  },
-  {
-    id: 4,
-    title: 'test_4',
-    done: false
-  },
-  {
-    id: 5,
-    title: 'test_5',
-    done: true
-  }
-]
 
 const Tasks = () => {
   const {tasks} = useTasks();
-  const [title, setTitle] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
-
 
   const TasksSearch = useMemo(() =>
       tasks
@@ -74,11 +45,7 @@ const Tasks = () => {
           </ListGroup>
         </Col>
         <Col xs={6} md={5}>
-          <EventForm
-            title={title}
-            setTitle={setTitle}
-            createEvent={() => {}}
-          />
+          <EventForm/>
           <DropdownButton title={filter} className={'mt-3'}>
             <Dropdown.Item
               active={filter === 'All'}
